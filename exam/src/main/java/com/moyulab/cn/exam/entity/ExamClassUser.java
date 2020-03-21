@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -7,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class ExamClassUser {
-
+    @TableId
     private Long id;
     private Long classId;
     private Long userId;

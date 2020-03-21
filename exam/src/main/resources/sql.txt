@@ -67,7 +67,7 @@ CREATE TABLE `exam_question` (
 # 7、试卷表
 CREATE TABLE `exam_paper` (
   `paper_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `pager_name` VARCHAR(255) NOT NULL COMMENT '试卷名',
+  `paper_name` VARCHAR(255) NOT NULL COMMENT '试卷名',
   `paper_code` VARCHAR(10) DEFAULT NULL COMMENT '考试码',
 	`duration` TINYINT(4) DEFAULT 0 COMMENT '考试时长(分钟)',
 	`score` TINYINT(4) DEFAULT NULL COMMENT '总分',

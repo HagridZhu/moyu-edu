@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.moyulab.cn.exam.common.BaseEntity;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class ExamQuestion extends BaseEntity {
-
+    @TableId
     private Long questionId; //id
     private Integer type; //试题类型：0=单择题，1=多选题，2=填空题，3=简答题，4=判断题
     private String content; //题干

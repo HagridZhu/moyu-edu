@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.web;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    @RequestMapping("get")
+    @GetMapping("get")
     public Object get(String name){
         return "get name=" + name;
     }
