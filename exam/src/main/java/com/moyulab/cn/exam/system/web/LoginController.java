@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @RestController
 @Slf4j
-@RequestMapping("haige/exam/oauth")
+@RequestMapping("exam/oauth")
 public class LoginController {
 
     @Autowired
