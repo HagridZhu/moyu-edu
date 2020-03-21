@@ -25,6 +25,10 @@ public class Result<T> {
         return new Result(500, message);
     }
 
+    public static <T> Result success(){
+        return new Result<T>(200, "success", null);
+    }
+
     public static <T> Result success(T data){
         return new Result<T>(200, "success", data);
     }

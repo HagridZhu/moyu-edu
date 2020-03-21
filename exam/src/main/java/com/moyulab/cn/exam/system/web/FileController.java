@@ -2,8 +2,10 @@ package com.moyulab.cn.exam.system.web;
 
 import com.moyulab.cn.exam.common.BaseController;
 import com.moyulab.cn.exam.common.Result;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +30,8 @@ public class FileController extends BaseController {
     private Random random = new Random();
 
 
-    @RequestMapping("upload")
+    @ApiOperation(value = "上传文件",notes = "上传什么都行，文件现在存在服务器的文件夹下/home/zhuzhihai/haige/static/moyu-edu/upload")
+    @PostMapping("upload")
     public Result uploadFile(@RequestParam("file") MultipartFile[] files) {
         List<String> urlList = new ArrayList<>();
         Long userId = getUserId();

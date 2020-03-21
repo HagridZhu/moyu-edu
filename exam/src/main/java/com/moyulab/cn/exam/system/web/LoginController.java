@@ -5,13 +5,12 @@ import com.moyulab.cn.exam.common.Result;
 import com.moyulab.cn.exam.system.entity.SysUser;
 import com.moyulab.cn.exam.system.mapper.SysUserMapper;
 import com.moyulab.cn.exam.util.JwtUtil;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -22,6 +21,7 @@ public class LoginController {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    @ApiOperation(value = "登陆" , notes = "登陆成功后返回token")
     @RequestMapping("login")
     public Object login(String userName, String password){
         log.info("---------------login,userName={},password={}", userName, password);
