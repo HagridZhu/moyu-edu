@@ -35,6 +35,10 @@ public class BaseController {
         return getLongParam("pageSize", 10L);
     }
 
+    protected long getPageStart(){
+        return (getPageIndex() - 1) * getPageSize();
+    }
+
     private Long getLongParam(String field, Long defaultValue){
         String pageIndex = getRequest().getParameter(field);
         if (StringUtils.hasText(pageIndex)) {

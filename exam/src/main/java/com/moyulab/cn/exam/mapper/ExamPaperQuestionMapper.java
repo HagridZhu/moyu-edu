@@ -15,7 +15,7 @@ public interface ExamPaperQuestionMapper extends BaseMapper<ExamPaperQuestion> {
      * @param paperId 试卷id
      * @param type 试题类型
      */
-    @Select("select t.num + 1 from exam_paper_question t JOIN  exam_question q USING(question_id) WHERE t.paper_id = #{paperId} and q.type = #{type} ORDER BY t.num DESC limit 1")
+    @Select("select t.question_num + 1 from exam_paper_question t JOIN  exam_question q USING(question_id) WHERE t.paper_id = #{paperId} and q.type = #{type} ORDER BY t.question_num DESC limit 1")
     Integer getNum(Long paperId, Integer type);
 
     /**
@@ -24,12 +24,14 @@ public interface ExamPaperQuestionMapper extends BaseMapper<ExamPaperQuestion> {
      * @param num 插入的题号位置
      * @param id 插入的试题id
      */
-    @Update("UPDATE exam_paper_question SET num = num + 1 WHERE paper_id = #{paperId} AND num >= #{num} AND id <> #{id}")
+    @Update("UPDATE exam_paper_question SET question_num = question_num + 1 WHERE paper_id = #{paperId} AND question_num >= #{num} AND id <> #{id}")
     int incrNum(Long paperId, Integer num, Long id);
 
-    @Select("select pq.id AS paperQuestionId, pq.num,pq.score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.num")
+    @Select("select pq.id AS paperQuestionId, pq.question_num,pq.question_score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.question_num")
     List<QuestionVo> listQuestionVo(Long paperId);
 
+    @Select("select pq.id AS paperQuestionId, pq.question_num,pq.question_score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.question_num")
+    List<QuestionVo> listQuestionVoByPaperUserId(Long paperUserId);
 
 
 

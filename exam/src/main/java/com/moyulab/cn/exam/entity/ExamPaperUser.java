@@ -12,6 +12,6 @@ public class ExamPaperUser extends BaseEntity {
     @TableId
     private Long paperUserId; //主键
     private Long paperId; //试卷id
-    private Integer score; //总分
+    private Integer userScore; //用户总分
 
 }

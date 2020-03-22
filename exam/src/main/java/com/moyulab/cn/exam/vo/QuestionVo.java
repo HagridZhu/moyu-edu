@@ -10,8 +10,9 @@ import lombok.Data;
 public class QuestionVo extends ExamQuestion {
 
     @ApiModelProperty("题号")
-    private Integer num;
+    private Integer questionNum;
     @ApiModelProperty("试卷试题id")
     private Long paperQuestionId;
-    
+    @ApiModelProperty("试卷试题分数")
+    private Integer questionScore;
 }

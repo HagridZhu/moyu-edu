@@ -23,6 +23,6 @@ public class ExamPaper extends BaseEntity {
     @ApiModelProperty(value = "考试时长(分钟)" ,dataType = "int")
     private Integer duration; //考试时长(分钟)
     @ApiModelProperty(value = "试卷总分",dataType = "int")
-    private Integer score; //总分
+    private Integer paperScore; //总分
 
 }

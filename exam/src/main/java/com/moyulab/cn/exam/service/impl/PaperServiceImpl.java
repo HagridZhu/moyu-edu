@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class PaperServiceImpl implements PaperService {
@@ -35,13 +32,13 @@ public class PaperServiceImpl implements PaperService {
     private ExamPaperUserMapper examPaperUserMapper;
 
     @Override
-    public int createPaperQuestion(Long paperId, Integer num, ExamQuestion examQuestion) {
+    public int createPaperQuestion(Long paperId, Integer num, Integer questionScore, ExamQuestion examQuestion) {
         checkPaperId(paperId);
-        Integer score = examQuestion.getScore();
+        Integer defaultScore = examQuestion.getDefaultScore();
         Long questionId = examQuestion.getQuestionId();
         // 1、获取试题信息，试题id为空则创建，不为空则查询数据库
         if (questionId == null) {
-            if (examQuestion.getScore() == null) {
+            if (defaultScore == null) {
                 throw new MoyuLabException("分数不能为空");
             }
             if (examQuestion.getType() == null) {
@@ -63,14 +60,14 @@ public class PaperServiceImpl implements PaperService {
         }
 
         // 3、没有设置分数，取试题的默认分数
-        if (score == null) {
-            score = examQuestion.getScore();
+        if (questionScore == null) {
+            questionScore = examQuestion.getDefaultScore();
         }
 
         // 4、新增试题到试卷
         ExamPaperQuestion examPaperQuestion = new ExamPaperQuestion();
-        examPaperQuestion.setScore(score);
-        examPaperQuestion.setNum(num);
+        examPaperQuestion.setQuestionScore(questionScore);
+        examPaperQuestion.setQuestionNum(num);
         examPaperQuestion.setPaperId(paperId);
         examPaperQuestion.setQuestionId(questionId);
         int insert = examPaperQuestionMapper.insert(examPaperQuestion);
@@ -104,12 +101,13 @@ public class PaperServiceImpl implements PaperService {
         List<QuestionVo> questionVoList = listQuestionVo(paperId);
         PaperAnswerVo vo = new PaperAnswerVo();
         if (CollectionUtils.isEmpty(questionVoList)) {
-            vo.setScore(0);
-            vo.setPaperAnswerList(Collections.emptyList());
+            vo.setUserScore(0);
+            vo.setQuestionVoList(Collections.emptyList());
             return vo;
         }
         // 3、创建答题记录
         List<ExamPaperAnswer> answerList = new ArrayList<>(questionVoList.size());
+        List<QuestionVo> voList = new ArrayList<>(questionVoList.size()); //返回的vo
         List<String> correctIdList = new ArrayList<>(); // 正确题目的id
         List<String> wrongIdList = new ArrayList<>(); // 错误的题目
         Integer totalScore = 0;
@@ -121,17 +119,17 @@ public class PaperServiceImpl implements PaperService {
                 answer = new ExamPaperAnswer();
                 answer.setPaperQuestionId(paperQuestionId);
             }
-            answer.setNum(question.getNum());
+            answer.setAnswerNum(question.getQuestionNum());
             // 3.1 设置相关参数，1）答题情况；2）分数
             answer.setId(null);
             // 3.2 比对答案，计算得分
             if (Objects.equals(answer.getAnswer(), question.getAnswer())) {
-                answer.setStatus(AnswerStatusEnum.正确.getValue());
-                answer.setScore(question.getScore());
-                totalScore += question.getScore(); //计算总分
+                answer.setAnswerStatus(AnswerStatusEnum.正确.getValue());
+                answer.setAnswerScore(question.getQuestionScore());
+                totalScore += question.getQuestionScore(); //计算总分
                 correctIdList.add(question.getQuestionId().toString());
             }else{
-                answer.setStatus(AnswerStatusEnum.错误.getValue());
+                answer.setAnswerStatus(AnswerStatusEnum.错误.getValue());
                 wrongIdList.add(question.getQuestionId().toString());
             }
             // 3.3 存起来，再批量存到数据库
@@ -140,7 +138,7 @@ public class PaperServiceImpl implements PaperService {
         // 3.4 创建答题结果，总分
         ExamPaperUser examPaperUser = new ExamPaperUser();
         examPaperUser.setPaperId(paperId);
-        examPaperUser.setScore(totalScore);
+        examPaperUser.setUserScore(totalScore);
         examPaperUserMapper.insert(examPaperUser);
         // 3.5 批量保存每题的答题记录
         answerList.stream().forEach(e -> e.setPaperUserId(examPaperUser.getPaperUserId()));
@@ -148,8 +146,29 @@ public class PaperServiceImpl implements PaperService {
         // 3.6 批量更新题目的对错数量
         incrCorrectNum(correctIdList);
         incrWrongNum(wrongIdList);
-        vo.setPaperAnswerList(answerList);
-        vo.setScore(totalScore);
+        BeanUtil.copyList(answerList, voList);
+        vo.setQuestionVoList(voList);
+        vo.setUserScore(totalScore);
+        return vo;
+    }
+
+    @Override
+    public PaperAnswerVo getPaperAnswerDetail(Long paperUserId){
+        if (paperUserId == null) {
+            throw new MoyuLabException("paperUserId不能为空");
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("paperUserId", paperUserId);
+        List<PaperAnswerVo> paperAnswerVoList = examPaperMapper.listPaperAnswerVo(map);
+        if (org.apache.shiro.util.CollectionUtils.isEmpty(paperAnswerVoList)) {
+            throw new MoyuLabException("找不到该答卷,paperUserId=" + paperUserId);
+        }
+        PaperAnswerVo paperAnswerVo = paperAnswerVoList.get(0);
+        PaperAnswerVo vo = new PaperAnswerVo();
+        BeanUtil.copy(paperAnswerVo, vo);
+
+
+
         return vo;
     }
 

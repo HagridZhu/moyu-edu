@@ -12,7 +12,7 @@ public class ExamPaperQuestion {
     private Long id; //id
     private Long paperId; //试卷id
     private Long questionId; //题目id
-    private Integer num; //题号
-    private Integer score; //分值
+    private Integer questionNum; //题号
+    private Integer questionScore; //分值
 
 }

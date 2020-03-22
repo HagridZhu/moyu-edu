@@ -14,6 +14,6 @@ public class ExamClass extends BaseEntity {
     private Long classId; //主键id
     private String school; //学校
     private Integer grade; //年级
-    private Integer num; //班别
+    private Integer classNum; //班别
 
 }

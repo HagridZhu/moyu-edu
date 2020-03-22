@@ -19,6 +19,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Api(tags={"试卷接口"})
 @RestController
@@ -67,11 +70,12 @@ public class PaperController extends BaseController {
     @ApiOperation("添加试题到试卷")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "paperId",value = "试卷id",dataType = "Long",required = true),
-            @ApiImplicitParam(name = "num",value = "题号,为空则自动插入到同种类型题目的末尾",dataType = "Integer")
+            @ApiImplicitParam(name = "num",value = "题号,为空则自动插入到同种类型题目的末尾",dataType = "Integer"),
+            @ApiImplicitParam(name = "questionScore",value = "题目的默认分值",dataType = "Integer")
     })
     @PostMapping("question")
-    public Result createPaperQuestion(Long paperId, Integer num, ExamQuestion examQuestion){
-        paperService.createPaperQuestion(paperId, num, examQuestion);
+    public Result createPaperQuestion(Long paperId, Integer num, Integer questionScore, ExamQuestion examQuestion){
+        paperService.createPaperQuestion(paperId, num, questionScore, examQuestion);
         return Result.success();
     }
 
@@ -86,6 +90,27 @@ public class PaperController extends BaseController {
     @PostMapping("answer")
     public Result<PaperAnswerVo> createPaperAnswer(PaperAnswerDto paperAnswerDto){
         return Result.success(paperService.createPaperAnswer(paperAnswerDto));
+    }
+
+    @ApiOperation("查看答卷记录")
+    @GetMapping("answer")
+    public Result<Page<PaperAnswerVo>> listPaperAnswer(String paperName){
+        Map<String,Object> map = new HashMap<>();
+        map.put("paperName", paperName);
+        map.put("start", getPageStart());
+        map.put("size", getPageSize());
+        List<PaperAnswerVo> list = this.examPaperMapper.listPaperAnswerVo(map);
+        int total = examPaperMapper.coutPaperAnswer(map);
+        Page<PaperAnswerVo> page = new Page<>(getPageIndex(), getPageSize(), total);
+        page.setRecords(list);
+        return Result.success(page);
+    }
+
+    @ApiOperation("查看答卷详情")
+    @ApiImplicitParam(name = "paperUserId", value = "答卷id", required = true)
+    @GetMapping("answer/detail")
+    public Result<PaperAnswerVo> getPaperAnswerDetail(Long paperUserId){
+        return Result.success(paperService.getPaperAnswerDetail(paperUserId));
     }
 
     private String getCode(){

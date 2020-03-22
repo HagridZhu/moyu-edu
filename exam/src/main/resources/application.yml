@@ -12,7 +12,10 @@ spring:
       username: root
       password: 123456
 mybatis-plus:
-  mapper-locations: classpath:mapper/system/*.xml
+  mapper-locations: classpath:mapper/**.xml
+  global-config:
+    db-config:
+      id-type: auto
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 

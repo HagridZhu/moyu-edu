@@ -35,7 +35,7 @@ public class ExamQuestion extends BaseEntity {
     @ApiModelProperty(value = "解析")
     private String explanation; //解析
     @ApiModelProperty(value = "默认分值")
-    private Integer score; //默认分值
+    private Integer defaultScore; //默认分值
     @ApiModelProperty(value = "答对数")
     private Integer correctNum; //答对数
     @ApiModelProperty(value = "答错数")
