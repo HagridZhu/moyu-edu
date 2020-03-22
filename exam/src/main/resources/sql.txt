@@ -45,7 +45,7 @@ CREATE TABLE `sys_role_permission` (
 # 6
 CREATE TABLE `exam_question` (
     `question_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `type` tinyint(4) NOT NULL COMMENT '试题类型：0=单择题，1=多选题，2=填空题，3=简答题，4=判断题',
+    `type` TINYINT(3) NOT NULL COMMENT '试题类型：0=单择题，1=多选题，2=填空题，3=简答题，4=判断题',
     `content` VARCHAR(20) NOT NULL COMMENT '题干',
     `option_a` VARCHAR(255) DEFAULT NULL COMMENT '选项A',
 	`option_b` VARCHAR(255) DEFAULT NULL COMMENT '选项B',
@@ -54,7 +54,7 @@ CREATE TABLE `exam_question` (
 	`picture_url` VARCHAR(255) DEFAULT NULL COMMENT '图片',
 	`answer` VARCHAR(255) DEFAULT NULL COMMENT '答案',
 	`explanation` VARCHAR(1023) DEFAULT NULL COMMENT '解析',
-	`score` TINYINT(4) DEFAULT NULL COMMENT '默认分值',
+	`score` int(10) DEFAULT NULL COMMENT '默认分值',
 	`correct_num` int(10) DEFAULT 0 COMMENT '答对数',
 	`wrong_num` int(10) DEFAULT 0 COMMENT '答错数',
     `create_date` datetime NOT NULL COMMENT '创建时间',
@@ -69,8 +69,8 @@ CREATE TABLE `exam_paper` (
   `paper_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `paper_name` VARCHAR(255) NOT NULL COMMENT '试卷名',
   `paper_code` VARCHAR(10) DEFAULT NULL COMMENT '考试码',
-	`duration` TINYINT(4) DEFAULT 0 COMMENT '考试时长(分钟)',
-	`score` TINYINT(4) DEFAULT NULL COMMENT '总分',
+	`duration` int(10) DEFAULT 0 COMMENT '考试时长(分钟)',
+	`score` int(10) DEFAULT NULL COMMENT '总分',
   `create_date` datetime NOT NULL COMMENT '创建时间',
 	`create_by` VARCHAR(20) NOT NULL COMMENT '创建人',
 	`last_update_date` datetime DEFAULT NULL COMMENT '更新时间',
@@ -83,8 +83,8 @@ CREATE TABLE `exam_paper_question` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `paper_id` bigint(20) NOT NULL COMMENT '试卷id',
 	`question_id` bigint(20) NOT NULL COMMENT '题目id',
-  `num` TINYINT(4) NOT NULL COMMENT '题号',
-	`score` TINYINT(4) DEFAULT NULL COMMENT '分值',
+  `num` TINYINT(3) NOT NULL COMMENT '题号',
+	`score` int(10) DEFAULT NULL COMMENT '分值',
   PRIMARY KEY (`id`),
   KEY `index_paper_id` (`paper_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='试卷试题表';
@@ -93,7 +93,7 @@ CREATE TABLE `exam_paper_question` (
 CREATE TABLE `exam_paper_user` (
   `paper_user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `paper_id` bigint(20) NOT NULL COMMENT '试卷id',
-  `score` TINYINT(4) NOT NULL COMMENT '总分',
+  `score` int(10) NOT NULL COMMENT '总分',
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `create_by` varchar(20) NOT NULL COMMENT '创建人',
   `last_update_date` datetime DEFAULT NULL COMMENT '更新时间',
@@ -105,10 +105,11 @@ CREATE TABLE `exam_paper_user` (
 CREATE TABLE `exam_paper_answer` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `paper_user_id` bigint(20) NOT NULL COMMENT '答卷id',
-	`num` TINYINT(4) NOT NULL COMMENT '题号',
-	`status` TINYINT(4) NOT NULL COMMENT '答题情况：0=正确，1=错误',
+  `paper_question_id` bigint(20) NOT NULL COMMENT '试卷试题id',
+	`num` TINYINT(3) NOT NULL COMMENT '题号',
+	`status` TINYINT(3) NOT NULL COMMENT '答题情况：0=正确，1=错误',
 	`answer` VARCHAR(255) DEFAULT NULL COMMENT '答案',
-  `score` TINYINT(4) DEFAULT 0 COMMENT '得分',
+  `score` int(10) DEFAULT 0 COMMENT '得分',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='答卷答题表';
 
@@ -116,8 +117,8 @@ CREATE TABLE `exam_paper_answer` (
 CREATE TABLE `exam_class` (
   `class_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `school` bigint(20) NOT NULL COMMENT '学校',
-	`grade` TINYINT(4) NOT NULL COMMENT '年级',
-  `num` TINYINT(4) NOT NULL COMMENT '班别',
+	`grade` TINYINT(3) NOT NULL COMMENT '年级',
+  `num` TINYINT(3) NOT NULL COMMENT '班别',
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `create_by` varchar(20) NOT NULL COMMENT '创建人',
   `last_update_date` datetime DEFAULT NULL COMMENT '更新时间',

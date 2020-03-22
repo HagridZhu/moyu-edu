@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.handler;
 
+import com.moyulab.cn.exam.common.MoyuLabException;
 import com.moyulab.cn.exam.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
@@ -23,6 +24,13 @@ public class ShrioExceptionHandler {
         log.error("", ex);
         return new Result(500, ex.getClass().getTypeName() + ":" + ex.getLocalizedMessage());
     }
+
+    // 捕捉MoyuLab自己抛的异常
+    @ExceptionHandler(MoyuLabException.class)
+    public Result handleMoyuLabException(MoyuLabException e) {
+        return new Result(607, e.getMessage());
+    }
+
 
     // 捕捉UnauthorizedException
 //    @ResponseStatus(HttpStatus.UNAUTHORIZED)

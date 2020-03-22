@@ -2,6 +2,7 @@ package com.moyulab.cn.exam.system.web;
 
 import com.moyulab.cn.exam.common.BaseController;
 import com.moyulab.cn.exam.common.Result;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StreamUtils;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Api(tags={"文件接口"})
 @RequestMapping("exam/file")
 @RestController
 @Slf4j

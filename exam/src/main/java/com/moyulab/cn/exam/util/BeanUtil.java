@@ -4,8 +4,9 @@ import org.springframework.beans.BeanUtils;
 
 public class BeanUtil {
 
-    public static void copy(Object src, Object tag){
+    public static <T> T copy(Object src, T tag){
         BeanUtils.copyProperties(src, tag);
+        return tag;
     }
 
 

@@ -1,25 +1,34 @@
 package com.moyulab.cn.exam.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyulab.cn.exam.common.BaseController;
 import com.moyulab.cn.exam.common.Constant;
 import com.moyulab.cn.exam.common.Result;
+import com.moyulab.cn.exam.dto.PaperAnswerDto;
 import com.moyulab.cn.exam.entity.ExamPaper;
+import com.moyulab.cn.exam.entity.ExamQuestion;
 import com.moyulab.cn.exam.mapper.ExamPaperMapper;
-import io.swagger.annotations.ApiOperation;
+import com.moyulab.cn.exam.service.PaperService;
+import com.moyulab.cn.exam.vo.PaperAnswerVo;
+import com.moyulab.cn.exam.vo.PaperDetailVo;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 
+@Api(tags={"试卷接口"})
 @RestController
 @RequestMapping("exam/paper")
 public class PaperController extends BaseController {
 
     @Autowired
     private ExamPaperMapper examPaperMapper;
+    @Autowired
+    private PaperService paperService;
 
     @ApiOperation(value="新增试卷", notes="就新增试卷记录..")
     @PostMapping
@@ -43,7 +52,7 @@ public class PaperController extends BaseController {
 
     @ApiOperation(value="查看试卷列表", notes="就查看试卷记录列表..")
     @GetMapping
-    public Result listPaper(ExamPaper examPaper){
+    public Result<Page<ExamPaper>> listPaper(ExamPaper examPaper){
         QueryWrapper<ExamPaper> wrapper = new QueryWrapper();
         Page<ExamPaper> page = new Page<>(getPageIndex(), getPageSize());
         String paperName = examPaper.getPaperName();
@@ -55,6 +64,29 @@ public class PaperController extends BaseController {
         return Result.success(examPaperMapper.selectPage(page, wrapper));
     }
 
+    @ApiOperation("添加试题到试卷")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "paperId",value = "试卷id",dataType = "Long",required = true),
+            @ApiImplicitParam(name = "num",value = "题号,为空则自动插入到同种类型题目的末尾",dataType = "Integer")
+    })
+    @PostMapping("question")
+    public Result createPaperQuestion(Long paperId, Integer num, ExamQuestion examQuestion){
+        paperService.createPaperQuestion(paperId, num, examQuestion);
+        return Result.success();
+    }
+
+    @ApiOperation("查询试卷详情")
+    @ApiImplicitParam(name = "paperId",value = "试卷id",dataType = "Long",required = true)
+    @GetMapping("detail")
+    public Result<PaperDetailVo> getPaperDetail(Long paperId){
+        return Result.success(paperService.getPaperDetailVo(paperId));
+    }
+
+    @ApiOperation("提交答卷")
+    @PostMapping("answer")
+    public Result<PaperAnswerVo> createPaperAnswer(PaperAnswerDto paperAnswerDto){
+        return Result.success(paperService.createPaperAnswer(paperAnswerDto));
+    }
 
     private String getCode(){
         return new BigInteger(String.valueOf(System.currentTimeMillis() - 1584794639393L)).toString(36);
