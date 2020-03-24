@@ -8,6 +8,7 @@ import com.moyulab.cn.exam.mapper.*;
 import com.moyulab.cn.exam.service.PaperAnswerService;
 import com.moyulab.cn.exam.service.PaperService;
 import com.moyulab.cn.exam.util.BeanUtil;
+import com.moyulab.cn.exam.vo.AnswerVo;
 import com.moyulab.cn.exam.vo.PaperAnswerVo;
 import com.moyulab.cn.exam.vo.PaperDetailVo;
 import com.moyulab.cn.exam.vo.QuestionVo;
@@ -73,7 +74,7 @@ public class PaperServiceImpl implements PaperService {
         int insert = examPaperQuestionMapper.insert(examPaperQuestion);
 
         // 5、更新试题后面的题号
-        examPaperQuestionMapper.incrNum(paperId, num, examPaperQuestion.getId());
+        examPaperQuestionMapper.incrNum(paperId, num, examPaperQuestion.getPaperQuestionId());
         return insert;
     }
 
@@ -102,12 +103,12 @@ public class PaperServiceImpl implements PaperService {
         PaperAnswerVo vo = new PaperAnswerVo();
         if (CollectionUtils.isEmpty(questionVoList)) {
             vo.setUserScore(0);
-            vo.setQuestionVoList(Collections.emptyList());
+            vo.setAnswerVoList(Collections.emptyList());
             return vo;
         }
         // 3、创建答题记录
         List<ExamPaperAnswer> answerList = new ArrayList<>(questionVoList.size());
-        List<QuestionVo> voList = new ArrayList<>(questionVoList.size()); //返回的vo
+        List<AnswerVo> voList = new ArrayList<>(questionVoList.size()); //返回的vo
         List<String> correctIdList = new ArrayList<>(); // 正确题目的id
         List<String> wrongIdList = new ArrayList<>(); // 错误的题目
         Integer totalScore = 0;
@@ -121,9 +122,9 @@ public class PaperServiceImpl implements PaperService {
             }
             answer.setAnswerNum(question.getQuestionNum());
             // 3.1 设置相关参数，1）答题情况；2）分数
-            answer.setId(null);
+            answer.setPaperAnswerId(null);
             // 3.2 比对答案，计算得分
-            if (Objects.equals(answer.getAnswer(), question.getAnswer())) {
+            if (Objects.equals(answer.getAnswer(), question.getQuestionAnswer())) {
                 answer.setAnswerStatus(AnswerStatusEnum.正确.getValue());
                 answer.setAnswerScore(question.getQuestionScore());
                 totalScore += question.getQuestionScore(); //计算总分
@@ -147,7 +148,7 @@ public class PaperServiceImpl implements PaperService {
         incrCorrectNum(correctIdList);
         incrWrongNum(wrongIdList);
         BeanUtil.copyList(answerList, voList);
-        vo.setQuestionVoList(voList);
+        vo.setAnswerVoList(voList);
         vo.setUserScore(totalScore);
         return vo;
     }
@@ -157,19 +158,22 @@ public class PaperServiceImpl implements PaperService {
         if (paperUserId == null) {
             throw new MoyuLabException("paperUserId不能为空");
         }
-        Map<String,Object> map = new HashMap<>();
-        map.put("paperUserId", paperUserId);
-        List<PaperAnswerVo> paperAnswerVoList = examPaperMapper.listPaperAnswerVo(map);
-        if (org.apache.shiro.util.CollectionUtils.isEmpty(paperAnswerVoList)) {
+        // 查询试卷信息
+        ExamPaperUser examPaperUser = this.examPaperUserMapper.selectById(paperUserId);
+        if (examPaperUser == null) {
             throw new MoyuLabException("找不到该答卷,paperUserId=" + paperUserId);
         }
-        PaperAnswerVo paperAnswerVo = paperAnswerVoList.get(0);
-        PaperAnswerVo vo = new PaperAnswerVo();
-        BeanUtil.copy(paperAnswerVo, vo);
-
-
-
-        return vo;
+        ExamPaper examPaper = this.examPaperMapper.selectById(examPaperUser.getPaperId());
+        if (examPaper == null) {
+            throw new MoyuLabException("找不到该试卷,paperId=" + examPaperUser.getPaperId());
+        }
+        // 查询答题列表
+        List<AnswerVo> answerVoList = paperAnswerService.listAnswerVo(paperUserId);
+        PaperAnswerVo paperAnswerVo = new PaperAnswerVo();
+        BeanUtil.copy(examPaperUser, paperAnswerVo);
+        BeanUtil.copy(examPaper, paperAnswerVo);
+        paperAnswerVo.setAnswerVoList(answerVoList);
+        return paperAnswerVo;
     }
 
     private List<QuestionVo> listQuestionVo(Long paperId){

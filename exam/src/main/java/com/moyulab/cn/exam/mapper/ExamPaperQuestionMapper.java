@@ -24,10 +24,10 @@ public interface ExamPaperQuestionMapper extends BaseMapper<ExamPaperQuestion> {
      * @param num 插入的题号位置
      * @param id 插入的试题id
      */
-    @Update("UPDATE exam_paper_question SET question_num = question_num + 1 WHERE paper_id = #{paperId} AND question_num >= #{num} AND id <> #{id}")
+    @Update("UPDATE exam_paper_question SET question_num = question_num + 1 WHERE paper_id = #{paperId} AND question_num >= #{num} AND paper_question_id <> #{id}")
     int incrNum(Long paperId, Integer num, Long id);
 
-    @Select("select pq.id AS paperQuestionId, pq.question_num,pq.question_score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.question_num")
+    @Select("select pq.paper_question_id, pq.question_num,pq.question_score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.question_num")
     List<QuestionVo> listQuestionVo(Long paperId);
 
     @Select("select pq.id AS paperQuestionId, pq.question_num,pq.question_score,q.* from exam_paper_question pq JOIN exam_question q USING(question_id) WHERE pq.paper_id = #{paperId} ORDER BY pq.question_num")

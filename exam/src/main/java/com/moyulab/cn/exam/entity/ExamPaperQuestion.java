@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ExamPaperQuestion {
     @TableId
-    private Long id; //id
+    private Long paperQuestionId; //id
     private Long paperId; //试卷id
     private Long questionId; //题目id
     private Integer questionNum; //题号

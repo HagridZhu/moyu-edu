@@ -29,7 +29,7 @@ public class PaperAnswerVo {
     private Integer paperScore;
     @ApiModelProperty("我的总分")
     private Integer userScore;
-    @ApiModelProperty("答题情况列表")
-    private List<QuestionVo> questionVoList;
+    @ApiModelProperty("答题列表")
+    private List<AnswerVo> answerVoList;
 
 }

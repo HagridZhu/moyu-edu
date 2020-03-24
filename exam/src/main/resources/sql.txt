@@ -52,7 +52,7 @@ CREATE TABLE `exam_question` (
 	`option_c` VARCHAR(255) DEFAULT NULL COMMENT '选项C',
 	`option_d` VARCHAR(255) DEFAULT NULL COMMENT '选项D',
 	`picture_url` VARCHAR(255) DEFAULT NULL COMMENT '图片',
-	`answer` VARCHAR(255) DEFAULT NULL COMMENT '答案',
+	`question_answer` VARCHAR(255) DEFAULT NULL COMMENT '答案',
 	`explanation` VARCHAR(1023) DEFAULT NULL COMMENT '解析',
 	`default_score` int(10) DEFAULT NULL COMMENT '默认分值',
 	`correct_num` int(10) DEFAULT 0 COMMENT '答对数',
@@ -80,12 +80,12 @@ CREATE TABLE `exam_paper` (
 
 # 8、试卷试题表
 CREATE TABLE `exam_paper_question` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `paper_question_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `paper_id` bigint(20) NOT NULL COMMENT '试卷id',
 	`question_id` bigint(20) NOT NULL COMMENT '题目id',
   `question_num` TINYINT(3) NOT NULL COMMENT '题号',
 	`question_score` int(10) DEFAULT NULL COMMENT '分值',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`paper_question_id`),
   KEY `index_paper_id` (`paper_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='试卷试题表';
 

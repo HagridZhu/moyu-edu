@@ -13,5 +13,6 @@ public class PaperAnswerDto {
     private Long paperId;
     @ApiModelProperty("答卷列表")
     private List<ExamPaperAnswer> examPaperAnswerList;
+    private Long paperUserId;
 
 }

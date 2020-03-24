@@ -13,7 +13,7 @@ import lombok.Data;
 public class ExamPaperAnswer {
     @TableId
     @ApiModelProperty("答卷答题id")
-    private Long id; //id
+    private Long paperAnswerId; //id
     @ApiModelProperty("答卷id")
     private Long paperUserId; //答卷id
     @ApiModelProperty("试卷试题id")
