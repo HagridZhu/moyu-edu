@@ -174,10 +174,10 @@ public class PaperServiceImpl implements PaperService {
         // 3.4 创建/更新 答题结果，总分
         if (examPaperUser == null) {
             examPaperUser = new ExamPaperUser();
-            examPaperUser.setPaperId(paperId);
-            examPaperUser.setPaperStatus(PaperStatusEnum.已考.getValue());
-            examPaperUser.setUserScore(totalScore);
         }
+        examPaperUser.setPaperId(paperId);
+        examPaperUser.setPaperStatus(PaperStatusEnum.已考.getValue());
+        examPaperUser.setUserScore(totalScore);
         createOrUpdate(examPaperUser);
         Long finalPaperUserId = examPaperUser.getPaperUserId();
         examPaperUser.getPaperUserId();
@@ -187,9 +187,12 @@ public class PaperServiceImpl implements PaperService {
         // 3.6 批量更新题目的对错数量
         incrCorrectNum(correctIdList);
         incrWrongNum(wrongIdList);
+        answerList.stream().forEach(e -> voList.add(new AnswerVo()));
         BeanUtil.copyList(answerList, voList);
         vo.setAnswerVoList(voList);
         vo.setUserScore(totalScore);
+        vo.setPaperUserId(finalPaperUserId);
+        vo.setPaperId(paperId);
         return vo;
     }
 

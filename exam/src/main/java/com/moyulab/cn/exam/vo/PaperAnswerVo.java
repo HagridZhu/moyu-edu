@@ -14,7 +14,7 @@ public class PaperAnswerVo {
     @ApiModelProperty("答卷id")
     private Long paperUserId;
     @ApiModelProperty("试卷id")
-    private String paperId;
+    private Long paperId;
     @ApiModelProperty("试卷名")
     private String paperName;
     @ApiModelProperty("考试码")
