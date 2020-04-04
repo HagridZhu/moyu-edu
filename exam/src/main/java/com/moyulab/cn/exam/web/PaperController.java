@@ -1,6 +1,5 @@
 package com.moyulab.cn.exam.web;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyulab.cn.exam.common.BaseController;

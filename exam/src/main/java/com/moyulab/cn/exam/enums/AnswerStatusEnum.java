@@ -1,4 +1,4 @@
-package com.moyulab.cn.exam.common;
+package com.moyulab.cn.exam.enums;
 
 
 public enum AnswerStatusEnum {

@@ -1,9 +1,10 @@
 package com.moyulab.cn.exam.service.impl;
 
-import com.moyulab.cn.exam.common.AnswerStatusEnum;
+import com.moyulab.cn.exam.enums.AnswerStatusEnum;
 import com.moyulab.cn.exam.common.MoyuLabException;
 import com.moyulab.cn.exam.dto.PaperAnswerDto;
 import com.moyulab.cn.exam.entity.*;
+import com.moyulab.cn.exam.enums.PaperStatusEnum;
 import com.moyulab.cn.exam.mapper.*;
 import com.moyulab.cn.exam.service.PaperAnswerService;
 import com.moyulab.cn.exam.service.PaperService;
@@ -110,7 +111,22 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public PaperAnswerVo createPaperAnswer(PaperAnswerDto paperAnswerDto) {
+        Long paperUserId = paperAnswerDto.getPaperUserId();
         Long paperId = paperAnswerDto.getPaperId();
+        ExamPaperUser examPaperUser = null;
+        if (paperUserId != null) {
+            examPaperUser = this.examPaperUserMapper.selectById(paperUserId);
+            if (examPaperUser == null) {
+                throw new MoyuLabException("找不到该答卷,paperUserId=" + paperUserId);
+            }
+            if (Objects.equals(examPaperUser.getPaperStatus(), PaperStatusEnum.已考.getValue())) {
+                throw new MoyuLabException("该答卷已考,paperUserId=" + paperUserId);
+            }
+            if (!Objects.equals(examPaperUser.getPaperId(), paperId)) {
+                throw new MoyuLabException("答卷与试卷不匹配!paperUserId=" + paperUserId + ",paperId=" + paperId);
+            }
+        }
+
         List<ExamPaperAnswer> examPaperAnswerList = paperAnswerDto.getExamPaperAnswerList();
         if (CollectionUtils.isEmpty(examPaperAnswerList)) {
             throw new MoyuLabException("答案不能为空");
@@ -155,13 +171,18 @@ public class PaperServiceImpl implements PaperService {
             // 3.3 存起来，再批量存到数据库
             answerList.add(answer);
         }
-        // 3.4 创建答题结果，总分
-        ExamPaperUser examPaperUser = new ExamPaperUser();
-        examPaperUser.setPaperId(paperId);
-        examPaperUser.setUserScore(totalScore);
-        examPaperUserMapper.insert(examPaperUser);
+        // 3.4 创建/更新 答题结果，总分
+        if (examPaperUser == null) {
+            examPaperUser = new ExamPaperUser();
+            examPaperUser.setPaperId(paperId);
+            examPaperUser.setPaperStatus(PaperStatusEnum.已考.getValue());
+            examPaperUser.setUserScore(totalScore);
+        }
+        createOrUpdate(examPaperUser);
+        Long finalPaperUserId = examPaperUser.getPaperUserId();
+        examPaperUser.getPaperUserId();
         // 3.5 批量保存每题的答题记录
-        answerList.stream().forEach(e -> e.setPaperUserId(examPaperUser.getPaperUserId()));
+        answerList.stream().forEach(e -> e.setPaperUserId(finalPaperUserId));
         paperAnswerService.saveBatch(answerList);
         // 3.6 批量更新题目的对错数量
         incrCorrectNum(correctIdList);
@@ -177,11 +198,12 @@ public class PaperServiceImpl implements PaperService {
         if (paperUserId == null) {
             throw new MoyuLabException("paperUserId不能为空");
         }
-        // 查询试卷信息
+        // 查询答卷信息
         ExamPaperUser examPaperUser = this.examPaperUserMapper.selectById(paperUserId);
         if (examPaperUser == null) {
             throw new MoyuLabException("找不到该答卷,paperUserId=" + paperUserId);
         }
+        // 查询试卷信息
         ExamPaper examPaper = this.examPaperMapper.selectById(examPaperUser.getPaperId());
         if (examPaper == null) {
             throw new MoyuLabException("找不到该试卷,paperId=" + examPaperUser.getPaperId());
@@ -235,6 +257,13 @@ public class PaperServiceImpl implements PaperService {
             return ;
         }
         examQuestionMapper.incrWrongNum(String.join(",", idList));
+    }
+
+    private int createOrUpdate(ExamPaperUser examPaperUser){
+        if (examPaperUser.getPaperUserId() == null) {
+            return examPaperUserMapper.insert(examPaperUser);
+        }
+        return examPaperUserMapper.updateById(examPaperUser);
     }
 
 }
