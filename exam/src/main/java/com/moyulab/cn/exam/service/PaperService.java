@@ -16,6 +16,8 @@ public interface PaperService {
      */
     int createPaperQuestion(Long paperId, Integer num, Integer questionScore, ExamQuestion examQuestion);
 
+    int deletePaperQuestion(Long paperQuestionId);
+
     /**
      *  获取试卷详细信息
      * @param paperId 试卷id

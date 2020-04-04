@@ -33,7 +33,7 @@ public class PaperServiceImpl implements PaperService {
     private ExamPaperUserMapper examPaperUserMapper;
 
     @Override
-    public int createPaperQuestion(Long paperId, Integer num, Integer questionScore, ExamQuestion examQuestion) {
+    public int createPaperQuestion(Long paperId, Integer questionNum, Integer questionScore, ExamQuestion examQuestion) {
         checkPaperId(paperId);
         Integer defaultScore = examQuestion.getDefaultScore();
         Long questionId = examQuestion.getQuestionId();
@@ -56,8 +56,16 @@ public class PaperServiceImpl implements PaperService {
 
         Integer type = examQuestion.getType();
         // 2、题号为空，查找同种类型试题对应的题号
-        if (num == null) {
-            num = examPaperQuestionMapper.getNum(paperId, type);
+        if (questionNum == null) {
+            questionNum = examPaperQuestionMapper.getNum(paperId, type);
+        }
+        // 没有同类型的试题，插入到该类型试题的第一题
+        if (questionNum == null || questionNum == 0) {
+            questionNum = examPaperQuestionMapper.getFristNum(paperId, type);
+        }
+        // 没有试题，默认第一题
+        if (questionNum == null) {
+            questionNum = 1;
         }
 
         // 3、没有设置分数，取试题的默认分数
@@ -68,14 +76,25 @@ public class PaperServiceImpl implements PaperService {
         // 4、新增试题到试卷
         ExamPaperQuestion examPaperQuestion = new ExamPaperQuestion();
         examPaperQuestion.setQuestionScore(questionScore);
-        examPaperQuestion.setQuestionNum(num);
+        examPaperQuestion.setQuestionNum(questionNum);
         examPaperQuestion.setPaperId(paperId);
         examPaperQuestion.setQuestionId(questionId);
         int insert = examPaperQuestionMapper.insert(examPaperQuestion);
 
-        // 5、更新试题后面的题号
-        examPaperQuestionMapper.incrNum(paperId, num, examPaperQuestion.getPaperQuestionId());
+        // 5、更新试题后面的题号 +1
+        examPaperQuestionMapper.incrNum(paperId, questionNum, 1, examPaperQuestion.getPaperQuestionId());
         return insert;
+    }
+
+    @Override
+    public int deletePaperQuestion(Long paperQuestionId) {
+        ExamPaperQuestion examPaperQuestion = examPaperQuestionMapper.selectById(paperQuestionId);
+        if (examPaperQuestion == null) {
+            throw new MoyuLabException("找不到试题,paperQuestionId=" + paperQuestionId);
+        }
+        // 5、更新试题后面的题号 -1
+        examPaperQuestionMapper.incrNum(examPaperQuestion.getPaperId(), examPaperQuestion.getQuestionNum(), -1, paperQuestionId);
+        return examPaperQuestionMapper.deleteById(paperQuestionId);
     }
 
     @Override

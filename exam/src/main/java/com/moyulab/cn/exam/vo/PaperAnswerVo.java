@@ -29,6 +29,8 @@ public class PaperAnswerVo {
     private Integer paperScore;
     @ApiModelProperty("我的总分")
     private Integer userScore;
+    @ApiModelProperty("答卷情况：0=待考，1=已考")
+    private Integer paperStatus;
     @ApiModelProperty("答题列表")
     private List<AnswerVo> answerVoList;
 

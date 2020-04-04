@@ -70,19 +70,29 @@ public class PaperController extends BaseController {
     @ApiOperation("添加试题到试卷")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "paperId",value = "试卷id",dataType = "Long",required = true),
-            @ApiImplicitParam(name = "num",value = "题号,为空则自动插入到同种类型题目的末尾",dataType = "Integer"),
+            @ApiImplicitParam(name = "questionNum",value = "题号,为空则自动插入到同种类型题目的末尾",dataType = "Integer"),
             @ApiImplicitParam(name = "questionScore",value = "题目的默认分值",dataType = "Integer")
     })
     @PostMapping("question")
-    public Result createPaperQuestion(Long paperId, Integer num, Integer questionScore, ExamQuestion examQuestion){
-        paperService.createPaperQuestion(paperId, num, questionScore, examQuestion);
+    public Result createPaperQuestion(Long paperId, Integer questionNum, Integer questionScore, ExamQuestion examQuestion){
+        paperService.createPaperQuestion(paperId, questionNum, questionScore, examQuestion);
+        return Result.success();
+    }
+
+    @ApiOperation("删除试卷的试题")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "paperQuestionId",value = "试题id",dataType = "Long",required = true)
+    })
+    @DeleteMapping("question")
+    public Result createPaperQuestion(Long paperQuestionId){
+        paperService.deletePaperQuestion(paperQuestionId);
         return Result.success();
     }
 
     @ApiOperation("查询试卷详情")
     @ApiImplicitParam(name = "paperId",value = "试卷id",dataType = "Long",required = true)
-    @GetMapping("detail")
-    public Result<PaperDetailVo> getPaperDetail(Long paperId){
+    @GetMapping("detail/{paperId}")
+    public Result<PaperDetailVo> getPaperDetail(@PathVariable Long paperId){
         return Result.success(paperService.getPaperDetailVo(paperId));
     }
 
@@ -94,11 +104,12 @@ public class PaperController extends BaseController {
 
     @ApiOperation("查看答卷记录")
     @GetMapping("answer")
-    public Result<Page<PaperAnswerVo>> listPaperAnswer(String paperName){
+    public Result<Page<PaperAnswerVo>> listPaperAnswer(String paperName, Integer paperStatus){
         Map<String,Object> map = new HashMap<>();
         map.put("paperName", paperName);
         map.put("start", getPageStart());
         map.put("size", getPageSize());
+        map.put("paperStatus", paperStatus);
         List<PaperAnswerVo> list = this.examPaperMapper.listPaperAnswerVo(map);
         int total = examPaperMapper.coutPaperAnswer(map);
         Page<PaperAnswerVo> page = new Page<>(getPageIndex(), getPageSize(), total);
