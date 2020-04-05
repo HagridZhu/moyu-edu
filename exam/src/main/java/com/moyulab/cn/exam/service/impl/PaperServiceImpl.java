@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.service.impl;
 
+import com.moyulab.cn.exam.dto.ClassDto;
 import com.moyulab.cn.exam.enums.AnswerStatusEnum;
 import com.moyulab.cn.exam.common.MoyuLabException;
 import com.moyulab.cn.exam.dto.PaperAnswerDto;
@@ -8,16 +9,15 @@ import com.moyulab.cn.exam.enums.PaperStatusEnum;
 import com.moyulab.cn.exam.mapper.*;
 import com.moyulab.cn.exam.service.PaperAnswerService;
 import com.moyulab.cn.exam.service.PaperService;
+import com.moyulab.cn.exam.service.PaperUserService;
 import com.moyulab.cn.exam.util.BeanUtil;
-import com.moyulab.cn.exam.vo.AnswerVo;
-import com.moyulab.cn.exam.vo.PaperAnswerVo;
-import com.moyulab.cn.exam.vo.PaperDetailVo;
-import com.moyulab.cn.exam.vo.QuestionVo;
+import com.moyulab.cn.exam.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import com.moyulab.cn.exam.util.RequestUtil;
 
 @Service
 public class PaperServiceImpl implements PaperService {
@@ -32,6 +32,10 @@ public class PaperServiceImpl implements PaperService {
     private PaperAnswerService paperAnswerService;
     @Autowired
     private ExamPaperUserMapper examPaperUserMapper;
+    @Autowired
+    private PaperUserService paperUserService;
+    @Autowired
+    private ExamClassMapper examClassMapper;
 
     @Override
     public int createPaperQuestion(Long paperId, Integer questionNum, Integer questionScore, ExamQuestion examQuestion) {
@@ -218,6 +222,38 @@ public class PaperServiceImpl implements PaperService {
         BeanUtil.copy(examPaper, paperAnswerVo);
         paperAnswerVo.setAnswerVoList(answerVoList);
         return paperAnswerVo;
+    }
+
+    @Override
+    public int createPaperUserByClassId(Long paperId, Long classId) {
+        if (paperId == null) {
+            throw new MoyuLabException("paperId不能为空");
+        }
+        if (classId == null) {
+            throw new MoyuLabException("classId不能为空");
+        }
+        ExamPaper examPaper = this.examPaperMapper.selectById(paperId);
+        if (examPaper == null) {
+            throw new MoyuLabException("找不到该试卷,paperId=" + paperId);
+        }
+
+        ClassDto classDto = new ClassDto();
+        classDto.setClassId(classId);
+        classDto.setCreateBy(RequestUtil.getUserId()); //查自己的班级
+        List<ClassUserVo> list = examClassMapper.listClassUserVo(classDto);
+        if (CollectionUtils.isEmpty(list)) {
+            throw new MoyuLabException("该班级下没有学生,classId=" + classId);
+        }
+        List<ExamPaperUser> paperUserList = new ArrayList<>(list.size());
+        list.stream().forEach(e -> {
+            ExamPaperUser examPaperUser = new ExamPaperUser();
+            examPaperUser.setPaperStatus(PaperStatusEnum.待考.getValue());
+            examPaperUser.setPaperId(paperId);
+            examPaperUser.setPaperUserId(e.getUserId());
+            paperUserList.add(examPaperUser);
+        });
+        paperUserService.saveBatch(paperUserList);
+        return paperUserList.size();
     }
 
     private List<QuestionVo> listQuestionVo(Long paperId){

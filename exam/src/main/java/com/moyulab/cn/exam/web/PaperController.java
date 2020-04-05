@@ -123,6 +123,16 @@ public class PaperController extends BaseController {
         return Result.success(paperService.getPaperAnswerDetail(paperUserId));
     }
 
+    @ApiOperation("给班级下的所有学生发起考试")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "paperId", value = "试卷id", required = true),
+            @ApiImplicitParam(name = "classId", value = "班级id", required = true)
+    })
+    @PostMapping("user/class")
+    public Result<PaperAnswerVo> createPaperUser(Long paperId, Long classId){
+        return Result.success(paperService.createPaperUserByClassId(paperId, classId));
+    }
+
     private String getCode(){
         return new BigInteger(String.valueOf(System.currentTimeMillis() - 1584794639393L)).toString(36);
     }

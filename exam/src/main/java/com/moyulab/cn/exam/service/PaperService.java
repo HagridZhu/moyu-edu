@@ -35,4 +35,9 @@ public interface PaperService {
      */
     PaperAnswerVo getPaperAnswerDetail(Long paperUserId);
 
+    /**
+     * 为整个班级的学生发起考试
+     */
+    int createPaperUserByClassId(Long paperId, Long classId);
+
 }
