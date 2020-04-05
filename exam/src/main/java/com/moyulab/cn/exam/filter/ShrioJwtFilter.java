@@ -25,13 +25,16 @@ public class ShrioJwtFilter extends BasicHttpAuthenticationFilter {
             try {
                 executeLogin(request, response);
                 refreshToken(request, response);
+                return true;
             } catch (Exception e) {
                 responseError(response, JSONObject.toJSONString(new Result(401, e.getMessage())));
                 return false;
             }
         }
         //如果请求头不存在 token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
-        return true;
+        // 没有token，无权访问
+        responseError(response, JSONObject.toJSONString(new Result(401, "需要登录后才能访问")));
+        return false;
     }
 
     @Override

@@ -39,6 +39,7 @@ public class ShrioConfig {
 
         // 放行不需要权限认证的接口
         filterRuleMap.put("/login","anon");
+        filterRuleMap.put("/exam/oauth/login","anon");
         filterRuleMap.put("/anon/**","anon");
         filterRuleMap.put("/login.html", "anon");
         filterRuleMap.put("/403.html", "anon");
