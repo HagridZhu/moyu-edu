@@ -1,14 +1,16 @@
 package com.moyulab.cn.exam.system.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.moyulab.cn.exam.common.BaseEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class SysUser extends BaseEntity {
+public class SysUserRole {
     @TableId
+    private Long id;
     private Long userId;
-    private String userName;
-    private String password;
+    private Long roleId;
+    private Date createDate;
 
 }

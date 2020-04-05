@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyulab.cn.exam.mapper.ExamClassMapper">
+
+    <select id="listClassUserVo" resultType="com.moyulab.cn.exam.vo.ClassUserVo" parameterType="com.moyulab.cn.exam.dto.ClassDto">
+        select s.user_name,s.user_id, c.*
+        from exam_class c
+        JOIN exam_class_user cu USING(class_id)
+        LEFT JOIN sys_user s USING(user_id)
+        <include refid="classVoCondition"></include>
+        order by c.create_date DESC
+        <if test="start != null and size != null">
+            limit ${start},${size}
+        </if>
+    </select>
+
+    <sql id="classVoCondition">
+        <where>
+            <if test="createBy != null">
+                and c.create_by = #{createBy}
+            </if>
+            <if test="grade != null">
+                and c.grade = #{grade}
+            </if>
+            <if test="classNum != null">
+                and c.class_num = #{classNum}
+            </if>
+            <if test="userName != null">
+                and u.user_name like CONCAT('%', #{userName}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="countClassUserVo" resultType="int" parameterType="com.moyulab.cn.exam.dto.ClassDto">
+        select count(*)
+        from exam_class c
+        JOIN exam_class_user cu USING(class_id)
+        LEFT JOIN sys_user s USING(user_id)
+        <include refid="classVoCondition"></include>
+    </select>
+
+
+
+</mapper>

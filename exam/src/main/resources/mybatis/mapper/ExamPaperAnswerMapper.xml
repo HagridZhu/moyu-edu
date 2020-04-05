@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moyulab.cn.exam.mapper.ExamPaperAnswerMapper">
+
+    <select id="listAnswerVo" resultType="com.moyulab.cn.exam.vo.AnswerVo" parameterType="com.moyulab.cn.exam.dto.PaperAnswerDto">
+        select * FROM
+        exam_paper_answer a
+        JOIN exam_paper_question pq USING(paper_question_id)
+        JOIN exam_question q USING(question_id)
+        <where>
+            a.paper_user_id = #{paperUserId}
+        </where>
+        ORDER BY pq.question_num
+    </select>
+
+
+</mapper>
