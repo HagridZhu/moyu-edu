@@ -14,10 +14,11 @@ public class JwtUtil {
     private static int REFRESH_MINUTE = 30;
     private static final String USER_NAME = "userName";
     private static final String USER_ID = "userId";
+    private static final String ROLE_ID = "roleId";
     private static Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
 
     public static void main(String[] args) {
-        String token = sign("admin", 1L);
+        String token = sign("admin", 1L, "1");
 
         token = JWT.create().withClaim(USER_NAME, "admin")
                 .withClaim(USER_ID, 10086)
@@ -60,9 +61,10 @@ public class JwtUtil {
                     .build().verify(token);
     }
 
-    public static String sign(String userName, Long userId){
+    public static String sign(String userName, Long userId, String roleId){
         return JWT.create().withClaim(USER_NAME, userName)
                 .withClaim(USER_ID, userId)
+                .withClaim(ROLE_ID, roleId)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_60_MINUTE))
                 .sign(ALGORITHM);
     }
@@ -81,7 +83,8 @@ public class JwtUtil {
         // 刷新token，返回新的token
         String userName = decode.getClaim(USER_NAME).asString();
         Long userId = decode.getClaim(USER_ID).asLong();
-        return sign(userName, userId);
+        String roleId = decode.getClaim(ROLE_ID).asString();
+        return sign(userName, userId, roleId);
     }
 
 
