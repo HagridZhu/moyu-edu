@@ -10,6 +10,8 @@ public class ClassUserVo extends ExamClass {
     private Long userId;
     @ApiModelProperty("账号")
     private String userName;
+    @ApiModelProperty("密码")
+    private String password;
     @ApiModelProperty("昵称")
     private String nick;
 

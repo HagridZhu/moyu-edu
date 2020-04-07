@@ -64,7 +64,9 @@ public class ClassController extends BaseController {
             wrapper.eq(Constant.COL_CREATE_BY, getUserId());
         }
         wrapper.orderByDesc(Constant.COL_CREATE_DATE);
-        return Result.success(examClassMapper.selectPage(page, wrapper));
+        Page<ExamClass> examClassPage = examClassMapper.selectPage(page, wrapper);
+        commonService.setCreateBy(examClassPage.getRecords());
+        return Result.success(examClassPage);
     }
 
     @ApiOperation(value="添加学生到班级", notes="创建学生用户，并添加到我的班级..")
