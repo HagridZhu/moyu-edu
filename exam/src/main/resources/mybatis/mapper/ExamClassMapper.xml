@@ -3,7 +3,7 @@
 <mapper namespace="com.moyulab.cn.exam.mapper.ExamClassMapper">
 
     <select id="listClassUserVo" resultType="com.moyulab.cn.exam.vo.ClassUserVo" parameterType="com.moyulab.cn.exam.dto.ClassDto">
-        select u.user_name,u.user_id, c.*
+        select u.user_name,u.user_id,u.nick, c.*
         from exam_class c
         JOIN exam_class_user cu USING(class_id)
         LEFT JOIN sys_user u USING(user_id)

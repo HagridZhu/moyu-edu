@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ExamClassMapper extends BaseMapper<ExamClass> {
 
-    /** 考试记录 */
+    /** 查询学生 */
     List<ClassUserVo> listClassUserVo(ClassDto classDto);
 
     int countClassUserVo(ClassDto classDto);

@@ -9,6 +9,7 @@ import com.moyulab.cn.exam.dto.ClassDto;
 import com.moyulab.cn.exam.entity.ExamClass;
 import com.moyulab.cn.exam.mapper.ExamClassMapper;
 import com.moyulab.cn.exam.service.ClassService;
+import com.moyulab.cn.exam.service.CommonService;
 import com.moyulab.cn.exam.system.entity.SysUser;
 import com.moyulab.cn.exam.vo.ClassUserVo;
 import io.swagger.annotations.Api;
@@ -27,6 +28,8 @@ public class ClassController extends BaseController {
     private ExamClassMapper examClassMapper;
     @Autowired
     private ClassService classService;
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value="新增班级", notes="就新增班级记录..")
     @PostMapping
@@ -73,6 +76,7 @@ public class ClassController extends BaseController {
         classDto.setStart(getPageStart());
         classDto.setSize(getPageSize());
         List<ClassUserVo> list = examClassMapper.listClassUserVo(classDto);
+        commonService.setCreateBy(list);
         int total = examClassMapper.countClassUserVo(classDto);
         Page<ClassUserVo> page = new Page<>(getPageIndex(), getPageSize(), total);
         page.setRecords(list);

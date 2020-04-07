@@ -8,7 +8,9 @@ import lombok.Data;
 public class ClassUserVo extends ExamClass {
     @ApiModelProperty("用户id")
     private Long userId;
-    @ApiModelProperty("用户名")
+    @ApiModelProperty("账号")
     private String userName;
+    @ApiModelProperty("昵称")
+    private String nick;
 
 }

@@ -9,6 +9,7 @@ import com.moyulab.cn.exam.dto.PaperAnswerDto;
 import com.moyulab.cn.exam.entity.ExamPaper;
 import com.moyulab.cn.exam.entity.ExamQuestion;
 import com.moyulab.cn.exam.mapper.ExamPaperMapper;
+import com.moyulab.cn.exam.service.CommonService;
 import com.moyulab.cn.exam.service.PaperService;
 import com.moyulab.cn.exam.vo.PaperAnswerVo;
 import com.moyulab.cn.exam.vo.PaperDetailVo;
@@ -31,6 +32,8 @@ public class PaperController extends BaseController {
     private ExamPaperMapper examPaperMapper;
     @Autowired
     private PaperService paperService;
+    @Autowired
+    private CommonService commonService;
 
     @ApiOperation(value="新增试卷", notes="就新增试卷记录..")
     @PostMapping
@@ -63,7 +66,9 @@ public class PaperController extends BaseController {
         }
         // 只能查看自己创建的
         wrapper.eq(Constant.COL_CREATE_BY, getUserId()).orderByDesc(Constant.COL_CREATE_DATE);
-        return Result.success(examPaperMapper.selectPage(page, wrapper));
+        Page<ExamPaper> examPaperPage = examPaperMapper.selectPage(page, wrapper);
+        commonService.setCreateBy(examPaperPage.getRecords());
+        return Result.success(examPaperPage);
     }
 
     @ApiOperation("添加试题到试卷")
