@@ -56,6 +56,7 @@ public class LoginController extends BaseController {
                 .put("token", token)
                 .put("avatar", sysUser.getAvatar())
                 .put("nick", sysUser.getNick())
+                .put("roleId", roleIdStr)
                 .build();
     }
 

@@ -6,6 +6,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RequestUtil {
 
@@ -29,6 +31,22 @@ public class RequestUtil {
         String token = getRequest().getHeader(Constant.TOKEN_HEADER_NAME);
         if (StringUtils.hasText(token)) {
             return JwtUtil.getUserName(token);
+        }
+        return null;
+    }
+
+    public static List<Long> getRoleId(){
+        String token = getRequest().getHeader(Constant.TOKEN_HEADER_NAME);
+        if (StringUtils.hasText(token)) {
+            String roleId = JwtUtil.getRoleId(token);
+            if (StringUtils.hasText(roleId)) {
+                String[] strs = roleId.split(",");
+                List<Long> roleIdList = new ArrayList(strs.length);
+                for (String str : strs) {
+                    roleIdList.add(Long.valueOf(str));
+                }
+                return roleIdList;
+            }
         }
         return null;
     }

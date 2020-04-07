@@ -59,7 +59,11 @@ public class ClassController extends BaseController {
         }
         // 只能查看自己创建的
         Page<ExamClass> page = new Page<>(getPageIndex(), getPageSize());
-        wrapper.eq(Constant.COL_CREATE_BY, getUserId()).orderByDesc(Constant.COL_CREATE_DATE);
+        if (!isAdmin()) {
+            // 不是管理员只能看自己创建的
+            wrapper.eq(Constant.COL_CREATE_BY, getUserId());
+        }
+        wrapper.orderByDesc(Constant.COL_CREATE_DATE);
         return Result.success(examClassMapper.selectPage(page, wrapper));
     }
 
@@ -69,10 +73,13 @@ public class ClassController extends BaseController {
         return Result.success(classService.createStudentToClass(classId, sysUser));
     }
 
-    @ApiOperation(value="查询我的学生", notes="创建学生用户，并添加到我的班级..")
+    @ApiOperation(value="查询我的学生", notes="查询我的学生")
     @GetMapping("user")
     public Result<Page<ExamClass>> listClassUser(ClassDto classDto){
-        classDto.setCreateBy(getUserId());
+        if (!isAdmin()) {
+            // 不是管理员只能看自己创建的
+            classDto.setCreateBy(getUserId());
+        }
         classDto.setStart(getPageStart());
         classDto.setSize(getPageSize());
         List<ClassUserVo> list = examClassMapper.listClassUserVo(classDto);

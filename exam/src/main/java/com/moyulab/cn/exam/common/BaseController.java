@@ -1,9 +1,11 @@
 package com.moyulab.cn.exam.common;
 
+import com.moyulab.cn.exam.enums.RoleEnum;
 import com.moyulab.cn.exam.util.RequestUtil;
 import org.apache.shiro.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public class BaseController {
 
@@ -37,6 +39,22 @@ public class BaseController {
 
     protected long getPageStart(){
         return (getPageIndex() - 1) * getPageSize();
+    }
+
+    protected static boolean isAdmin(){
+        List<Long> roleId = RequestUtil.getRoleId();
+        if (roleId != null) {
+            return roleId.contains((long)RoleEnum.管理员.getValue());
+        }
+        return false;
+    }
+
+    protected static boolean isTeacher(){
+        List<Long> roleId = RequestUtil.getRoleId();
+        if (roleId != null) {
+            return roleId.contains((long)RoleEnum.老师.getValue());
+        }
+        return false;
     }
 
     private Long getLongParam(String field, Long defaultValue){

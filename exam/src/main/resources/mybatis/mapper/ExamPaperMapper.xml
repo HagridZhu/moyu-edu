@@ -5,32 +5,42 @@
     <select id="listPaperAnswerVo" resultType="com.moyulab.cn.exam.vo.PaperAnswerVo" parameterType="map">
         select pu.create_date,pu.user_score,pu.paper_user_id,pu.paper_status, p.* from exam_paper p
         JOIN exam_paper_user pu USING(paper_id)
-        <where>
-          <if test="paperName != null and pageName != ''">
-              and p.paper_name like CONCAT('%', #{paperName}, '%')
-          </if>
-          <if test="paperUserId != null">
-              and pu.paper_user_id = #{paperUserId}
-          </if>
-          <if test="paperStatus != null">
-              and pu.paper_status = #{paperStatus}
-          </if>
-        </where>
+        <include refid="condition"></include>
         order by pu.create_date DESC
         <if test="start != null and size != null">
             limit ${start},${size}
         </if>
     </select>
 
+    <sql id="condition">
+        <if test="teacherId != null">
+            JOIN exam_class_user cu ON cu.user_id = pu.create_by
+            JOIN exam_class c USING(class_id)
+        </if>
+        <where>
+            <if test="paperName != null and pageName != ''">
+                and p.paper_name like CONCAT('%', #{paperName}, '%')
+            </if>
+            <if test="paperUserId != null">
+                and pu.paper_user_id = #{paperUserId}
+            </if>
+            <if test="paperStatus != null">
+                and pu.paper_status = #{paperStatus}
+            </if>
+            <if test="createBy != null">
+                and pu.create_by = #{createBy}
+            </if>
+            <if test="teacherId != null">
+                and c.create_by = #{teacherId}
+            </if>
+        </where>
+    </sql>
+
     <select id="coutPaperAnswer" resultType="int" parameterType="map">
         select count(*)
         from exam_paper p
         JOIN exam_paper_user pu USING(paper_id)
-        <where>
-            <if test="paperName != null and paperName != ''">
-                p.paper_name like CONCAT('%', #{paperName}, '%')
-            </if>
-        </where>
+        <include refid="condition"></include>
     </select>
 
 

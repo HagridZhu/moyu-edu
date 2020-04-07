@@ -64,8 +64,10 @@ public class PaperController extends BaseController {
         if (StringUtils.hasText(paperName)) {
             wrapper.like("paper_name", "%" + paperName + "%");
         }
-        // 只能查看自己创建的
-        wrapper.eq(Constant.COL_CREATE_BY, getUserId()).orderByDesc(Constant.COL_CREATE_DATE);
+        // 不是管理员只能查看自己创建的
+        if (!isAdmin()) {
+            wrapper.eq(Constant.COL_CREATE_BY, getUserId()).orderByDesc(Constant.COL_CREATE_DATE);
+        }
         Page<ExamPaper> examPaperPage = examPaperMapper.selectPage(page, wrapper);
         commonService.setCreateBy(examPaperPage.getRecords());
         return Result.success(examPaperPage);
@@ -114,6 +116,16 @@ public class PaperController extends BaseController {
         map.put("start", getPageStart());
         map.put("size", getPageSize());
         map.put("paperStatus", paperStatus);
+
+        if (!isAdmin()) {
+            if (isTeacher()) {
+                // 老师只能查看自己学生的答卷记录
+                map.put("teacherId", this.getUserId());
+            } else {
+                // 不是管理员也不是老师，只能查看自己的答卷记录
+                map.put("createBy", this.getUserId());
+            }
+        }
         List<PaperAnswerVo> list = this.examPaperMapper.listPaperAnswerVo(map);
         int total = examPaperMapper.coutPaperAnswer(map);
         Page<PaperAnswerVo> page = new Page<>(getPageIndex(), getPageSize(), total);

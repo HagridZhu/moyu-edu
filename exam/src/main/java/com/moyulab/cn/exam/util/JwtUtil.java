@@ -22,6 +22,7 @@ public class JwtUtil {
 
         token = JWT.create().withClaim(USER_NAME, "admin")
                 .withClaim(USER_ID, 10086)
+                .withClaim(ROLE_ID, "3")
                 .withExpiresAt(new Date(System.currentTimeMillis() + 40 * 60 * 1000))
                 .sign(ALGORITHM);
         System.out.println("token=" + token);
@@ -31,6 +32,10 @@ public class JwtUtil {
 
     public static Long getUserId(String token){
         return JWT.decode(token).getClaim(USER_ID).asLong();
+    }
+
+    public static String getRoleId(String token){
+        return JWT.decode(token).getClaim(ROLE_ID).asString();
     }
 
     public static String getUserName(String token){
