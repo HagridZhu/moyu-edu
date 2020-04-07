@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.moyulab.cn.exam.common.MoyuLabException;
 import com.moyulab.cn.exam.dto.ClassDto;
 import com.moyulab.cn.exam.entity.ExamClassUser;
@@ -10,6 +11,7 @@ import com.moyulab.cn.exam.system.entity.SysUser;
 import com.moyulab.cn.exam.system.entity.SysUserRole;
 import com.moyulab.cn.exam.system.mapper.SysUserMapper;
 import com.moyulab.cn.exam.system.mapper.SysUserRoleMapper;
+import com.moyulab.cn.exam.system.service.UserService;
 import com.moyulab.cn.exam.vo.ClassUserVo;
 import org.apache.shiro.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class ClassServiceImpl implements ClassService {
     private SysUserRoleMapper sysUserRoleMapper;
     @Autowired
     private ExamClassUserMapper examClassUserMapper;
+    @Autowired
+    private UserService userService;
 
     @Override
     public int createStudentToClass(Long classId, SysUser sysUser) {
@@ -36,13 +40,19 @@ public class ClassServiceImpl implements ClassService {
             throw new MoyuLabException("classId不能为空");
         }
         if (!StringUtils.hasText(userName)) {
-            throw new MoyuLabException("用户名不能为空");
+            throw new MoyuLabException("账号不能为空");
         }
         if (!StringUtils.hasText(password)) {
             throw new MoyuLabException("密码不能为空");
         }
 
         // 创建学生用户
+        QueryWrapper<SysUser> query = new QueryWrapper<>();
+        query.eq("user_name", userName);
+        Integer count = sysUserMapper.selectCount(query);
+        if (count != null && count > 0) {
+            throw new MoyuLabException("账号已存在！");
+        }
         sysUserMapper.insert(sysUser);
         Long userId = sysUser.getUserId();
         SysUserRole sysUserRole = new SysUserRole();
