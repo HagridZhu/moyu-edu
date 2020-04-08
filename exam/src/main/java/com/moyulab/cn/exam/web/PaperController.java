@@ -11,6 +11,7 @@ import com.moyulab.cn.exam.entity.ExamQuestion;
 import com.moyulab.cn.exam.mapper.ExamPaperMapper;
 import com.moyulab.cn.exam.service.CommonService;
 import com.moyulab.cn.exam.service.PaperService;
+import com.moyulab.cn.exam.system.service.UserService;
 import com.moyulab.cn.exam.vo.PaperAnswerVo;
 import com.moyulab.cn.exam.vo.PaperDetailVo;
 import io.swagger.annotations.*;
@@ -123,10 +124,11 @@ public class PaperController extends BaseController {
                 map.put("teacherId", this.getUserId());
             } else {
                 // 不是管理员也不是老师，只能查看自己的答卷记录
-                map.put("createBy", this.getUserId());
+                map.put("userId", this.getUserId());
             }
         }
         List<PaperAnswerVo> list = this.examPaperMapper.listPaperAnswerVo(map);
+        commonService.setCreateBy(list);
         int total = examPaperMapper.coutPaperAnswer(map);
         Page<PaperAnswerVo> page = new Page<>(getPageIndex(), getPageSize(), total);
         page.setRecords(list);

@@ -1,5 +1,6 @@
 package com.moyulab.cn.exam.vo;
 
+import com.moyulab.cn.exam.common.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Data
 @ApiModel
-public class PaperAnswerVo {
+public class PaperAnswerVo extends BaseEntity {
 
     @ApiModelProperty("答卷id")
     private Long paperUserId;
@@ -21,10 +22,10 @@ public class PaperAnswerVo {
     private String paperCode;
     @ApiModelProperty("考试时长")
     private Integer duration;
-    @ApiModelProperty("提交时间")
-    private Date createDate;
-    @ApiModelProperty("答卷人")
-    private String createBy;
+    @ApiModelProperty("答卷人id")
+    private Long userId;
+    @ApiModelProperty("答卷人昵称")
+    private Long nick;
     @ApiModelProperty("试卷总分")
     private Integer paperScore;
     @ApiModelProperty("我的总分")

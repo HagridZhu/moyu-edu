@@ -3,8 +3,9 @@
 <mapper namespace="com.moyulab.cn.exam.mapper.ExamPaperMapper">
 
     <select id="listPaperAnswerVo" resultType="com.moyulab.cn.exam.vo.PaperAnswerVo" parameterType="map">
-        select pu.create_date,pu.user_score,pu.paper_user_id,pu.paper_status, p.* from exam_paper p
+        select pu.create_date,pu.create_by,pu.user_score,pu.paper_user_id,pu.paper_status,pu.user_id,u.nick, p.* from exam_paper p
         JOIN exam_paper_user pu USING(paper_id)
+        LEFT JOIN sys_user u USING(user_id)
         <include refid="condition"></include>
         order by pu.create_date DESC
         <if test="start != null and size != null">
@@ -32,6 +33,9 @@
             </if>
             <if test="teacherId != null">
                 and c.create_by = #{teacherId}
+            </if>
+            <if test="userId != null">
+                and pu.user_id = #{userId}
             </if>
         </where>
     </sql>

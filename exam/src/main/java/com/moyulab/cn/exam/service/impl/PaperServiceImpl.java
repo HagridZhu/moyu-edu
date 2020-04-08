@@ -249,7 +249,7 @@ public class PaperServiceImpl implements PaperService {
             ExamPaperUser examPaperUser = new ExamPaperUser();
             examPaperUser.setPaperStatus(PaperStatusEnum.待考.getValue());
             examPaperUser.setPaperId(paperId);
-            examPaperUser.setPaperUserId(e.getUserId());
+            examPaperUser.setUserId(e.getUserId());
             paperUserList.add(examPaperUser);
         });
         paperUserService.saveBatch(paperUserList);

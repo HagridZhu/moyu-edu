@@ -13,6 +13,7 @@ public class ExamPaperUser extends BaseEntity {
     @TableId
     private Long paperUserId; //主键
     private Long paperId; //试卷id
+    private Long userId; //考生id
     private Integer userScore; //用户总分
     @ApiModelProperty(value = "答卷情况：0=待考，1=已考")
     private Integer paperStatus;
