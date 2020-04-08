@@ -25,7 +25,7 @@ public class PaperAnswerVo extends BaseEntity {
     @ApiModelProperty("答卷人id")
     private Long userId;
     @ApiModelProperty("答卷人昵称")
-    private Long nick;
+    private String nick;
     @ApiModelProperty("试卷总分")
     private Integer paperScore;
     @ApiModelProperty("我的总分")

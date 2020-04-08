@@ -15,7 +15,7 @@
 
     <sql id="condition">
         <if test="teacherId != null">
-            JOIN exam_class_user cu ON cu.user_id = pu.create_by
+            JOIN exam_class_user cu USING(user_id)
             JOIN exam_class c USING(class_id)
         </if>
         <where>
